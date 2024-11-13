@@ -7,31 +7,31 @@ from fastapi import APIRouter
 from model import ResponseModel
 from model.exception.my_exception import MyCustomException
 
-# 创建天气路由器实例
-weather_api = APIRouter()
+# 创建城市路由器实例
+city_api = APIRouter
 
 
-# 请求天气数据
-@weather_api.get("/getWeather")
-async def get_weather(location: str = "101010100"):
+# 请求城市信息
+@city_api.get("/getCity/{location}")
+async def get_city(location: str):
     """
-    请求天气数据
+    请求城市信息
 
-    向和风天气API发送请求
+    向和风天气API发送请求.
 
-    :param location: 需要查询地区的LocationID
-    :return: 状态码，请求消息，天气信息
+    :param location: 需要查询地区的名称，支持文字、以英文逗号分隔的经度,纬度坐标（十进制，最多支持小数点后两位）
+    :return: 状态码，请求消息，城市信息
     """
     headers = {
         "X-QW-Api-Key": "08da0c0c5070482cab7a575133b53745"
     }
     response = requests.get(
-        "https://devapi.qweather.com/v7/weather/now",
+        "https://geoapi.qweather.com/v2/city/lookup",
 
         params={
             "location": location,
-            "lang": "zh",
-            "unit": "m",
+            "range": "cn",
+            "lang": "zh"
         },
 
         headers=headers
