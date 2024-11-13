@@ -12,8 +12,8 @@ weather_api = APIRouter()
 
 
 # 请求天气数据
-@weather_api.get("/getWeather")
-async def get_weather(location: str = "101010100"):
+@weather_api.get("/getWeather/{location}")
+async def get_weather(location):
     """
     请求天气数据
 
