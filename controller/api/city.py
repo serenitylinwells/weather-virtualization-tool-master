@@ -42,4 +42,4 @@ async def get_city(location: str):
     status_code = result_dict["code"]
     if status_code != "200":
         raise MyCustomException("1", "和风天气API请求出错")
-    return ResponseModel(code=0, msg="请求天气数据成功", data=result_dict)
+    return ResponseModel(code=0, msg="请求城市信息成功", data=result_dict)
