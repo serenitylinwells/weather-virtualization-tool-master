@@ -4,7 +4,7 @@ import os
 from fastapi import APIRouter
 
 from model import ResponseModel
-from model.exception.my_exception import MyCustomException
+from model.exception import MyCustomException
 from model.user import UserDTO
 
 # 创建注册路由器实例
@@ -29,7 +29,7 @@ async def register(user: UserDTO):
         with open(user_json_path, 'r') as f:
             users = json.load(f)
             if user.username in users:
-                return ResponseModel(code=1, msg="用户已存在", data={})
+                raise MyCustomException("1", "用户已存在")
 
     users[user.username] = {'username': user.username, 'password': user.password}
     with open(user_json_path, 'w') as f:
@@ -54,9 +54,9 @@ async def login(user: UserDTO):
     with open(user_json_path, 'r') as f:
         users = json.load(f)
         if user.username not in users:
-            return ResponseModel(code=1, msg="密码或用户名错误", data={})
+            raise MyCustomException("1", "用户不存在")
 
         if users[user.username]['password'] != user.password:
-            return ResponseModel(code=1, msg="密码或用户名错误", data={})
+            raise MyCustomException("1", "密码错误")
 
     return ResponseModel(code=0, msg="登录成功", data={})

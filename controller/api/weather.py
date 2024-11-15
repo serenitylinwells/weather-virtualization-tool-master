@@ -12,6 +12,8 @@ weather_api = APIRouter()
 
 locationID = ""
 
+header = {"X-QW-Api-Key": "08da0c0c5070482cab7a575133b53745"}
+
 
 # 请求城市信息
 @weather_api.get("/getCity/{location}")
@@ -27,9 +29,6 @@ async def get_city(location: str):
 
     global locationID
 
-    headers = {
-        "X-QW-Api-Key": "08da0c0c5070482cab7a575133b53745"
-    }
     response = requests.get(
         "https://geoapi.qweather.com/v2/city/lookup",
 
@@ -39,7 +38,7 @@ async def get_city(location: str):
             "lang": "zh"
         },
 
-        headers=headers
+        headers=header
     )
 
     content = gzip.decompress(response.content)
@@ -65,9 +64,6 @@ async def get_weather(location_id: str = locationID):
     :return: 状态码，请求消息，天气信息
     """
 
-    headers = {
-        "X-QW-Api-Key": "08da0c0c5070482cab7a575133b53745"
-    }
     response = requests.get(
         "https://devapi.qweather.com/v7/weather/now",
 
@@ -77,7 +73,7 @@ async def get_weather(location_id: str = locationID):
             "unit": "m"
         },
 
-        headers=headers
+        headers=header
     )
 
     content = gzip.decompress(response.content)

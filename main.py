@@ -1,11 +1,9 @@
 import uvicorn
-import json
 
 from fastapi import FastAPI
 
 from controller.api.register import register_api
 from controller.api.weather import weather_api
-from model import ResponseModel
 
 app = FastAPI()
 app.include_router(register_api, prefix="/weatherTool/register-api/", tags=["注册接口"])
