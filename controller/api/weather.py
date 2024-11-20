@@ -5,13 +5,13 @@ import gzip
 from fastapi import APIRouter
 
 from model import ResponseModel
-from model.exception.my_exception import MyCustomException
+from model.exception import MyCustomException
 from config import settings
 
 # 创建天气路由器实例
 weather_api = APIRouter()
 
-header = {settings.API_key}
+header = {"X-QW-Api-Key": settings.api_key}
 
 
 # 请求城市信息
@@ -77,16 +77,16 @@ async def get_weather(location_id: str):
         raise MyCustomException("1", "和风天气API请求出错")
 
     weather_data = {
-        "time": result_dict["now"]["obsTime"],          # 数据获取时间"2020-06-30T21:40+08:00"
-        "temp": result_dict["now"]["temp"],             # 温度"24"（摄氏度）
-        "feltTemp": result_dict["now"]["feelsLike"],    # 体感温度"26"（摄氏度）
-        "text": result_dict["now"]["text"],             # 天气状况"多云"
-        "windDir": result_dict["now"]["windDir"],       # 风向"东南风"
-        "windScale": result_dict["now"]["windScale"],   # 风力等级"1"
-        "windSpeed": result_dict["now"]["windSpeed"],   # 风速"3"（公里/小时）
-        "humidity": result_dict["now"]["humidity"],     # 相对湿度"72"（%）
-        "precip": result_dict["now"]["precip"],         # 降水量（毫米，过去一个钟）
-        "pressure": result_dict["now"]["pressure"]      # 气压（百帕）
+        "time": result_dict["now"]["obsTime"],  # 数据获取时间"2020-06-30T21:40+08:00"
+        "temp": result_dict["now"]["temp"],  # 温度"24"（摄氏度）
+        "feltTemp": result_dict["now"]["feelsLike"],  # 体感温度"26"（摄氏度）
+        "text": result_dict["now"]["text"],  # 天气状况"多云"
+        "windDir": result_dict["now"]["windDir"],  # 风向"东南风"
+        "windScale": result_dict["now"]["windScale"],  # 风力等级"1"
+        "windSpeed": result_dict["now"]["windSpeed"],  # 风速"3"（公里/小时）
+        "humidity": result_dict["now"]["humidity"],  # 相对湿度"72"（%）
+        "precip": result_dict["now"]["precip"],  # 降水量（毫米，过去一个钟）
+        "pressure": result_dict["now"]["pressure"]  # 气压（百帕）
     }
     return ResponseModel(code=0, msg="请求天气数据成功", data=weather_data)
 
