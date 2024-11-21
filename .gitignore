@@ -1,0 +1,7 @@
+# 忽略 Python 虚拟环境
+venv/
+
+# 忽略前端依赖
+node_modules/
+
+__pycache__/
