@@ -1,6 +1,5 @@
 import requests
 import json
-import gzip
 
 from fastapi import APIRouter
 
@@ -38,8 +37,7 @@ async def get_city(location: str):
         headers=header
     )
 
-    content = gzip.decompress(response.content)
-    result_dict = json.loads(content.decode("utf-8"))
+    result_dict = response.json()
     status_code = result_dict["code"]
     if status_code != "200":
         raise MyCustomException("1", "和风天气API请求出错")
@@ -47,7 +45,7 @@ async def get_city(location: str):
 
 
 # 请求天气数据（城市名）
-@weather_api.get("/getWeather/{location_id}")
+@weather_api.get("/getWeather/byLocationId/{location_id}")
 async def get_weather(location_id: str):
     """
     请求天气数据
@@ -70,8 +68,7 @@ async def get_weather(location_id: str):
         headers=header
     )
 
-    content = gzip.decompress(response.content)
-    result_dict = json.loads(content.decode("utf-8"))
+    result_dict = response.json()
     status_code = result_dict["code"]
     if status_code != "200":
         raise MyCustomException("1", "和风天气API请求出错")
@@ -86,13 +83,15 @@ async def get_weather(location_id: str):
         "windSpeed": result_dict["now"]["windSpeed"],  # 风速"3"（公里/小时）
         "humidity": result_dict["now"]["humidity"],  # 相对湿度"72"（%）
         "precip": result_dict["now"]["precip"],  # 降水量（毫米，过去一个钟）
-        "pressure": result_dict["now"]["pressure"]  # 气压（百帕）
+        "pressure": result_dict["now"]["pressure"],  # 气压（百帕）
+        "windDir": result_dict["now"]["windDir"],
+        "vis": result_dict["now"]["vis"]  # 气压（百帕）
     }
     return ResponseModel(code=0, msg="请求天气数据成功", data=weather_data)
 
 
 # 请求天气数据（经纬度）
-@weather_api.get("/getWeather/{longitude_latitude}")
+@weather_api.get("/getWeather/byLongitudeLatitude/{longitude_latitude}")
 async def get_weather(longitude_latitude: str):
     """
     请求天气数据
@@ -115,8 +114,7 @@ async def get_weather(longitude_latitude: str):
         headers=header
     )
 
-    content = gzip.decompress(response.content)
-    result_dict = json.loads(content.decode("utf-8"))
+    result_dict = response.json()
     status_code = result_dict["code"]
     if status_code != "200":
         raise MyCustomException("1", "和风天气API请求出错")
@@ -131,6 +129,8 @@ async def get_weather(longitude_latitude: str):
         "windSpeed": result_dict["now"]["windSpeed"],  # 风速"3"（公里/小时）
         "humidity": result_dict["now"]["humidity"],  # 相对湿度"72"（%）
         "precip": result_dict["now"]["precip"],  # 降水量（毫米，过去一个钟）
-        "pressure": result_dict["now"]["pressure"]  # 气压（百帕）
+        "pressure": result_dict["now"]["pressure"],  # 气压（百帕）
+        "windDir": result_dict["now"]["windDir"],
+        "vis": result_dict["now"]["vis"]
     }
     return ResponseModel(code=0, msg="请求天气数据成功", data=weather_data)
