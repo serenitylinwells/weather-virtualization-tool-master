@@ -47,6 +47,7 @@ async def get_city(location: str):
 # 请求天气数据（城市名）
 @weather_api.get("/getWeather/byLocationId/{location_id}")
 async def get_weather(location_id: str):
+    
     """
     请求天气数据
 
