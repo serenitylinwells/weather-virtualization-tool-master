@@ -44,24 +44,23 @@ async def get_city(location: str):
     return ResponseModel(code=0, msg="请求城市信息成功", data=result_dict)
 
 
-# 请求天气数据（城市名）
-@weather_api.get("/getWeather/byLocationId/{location_id}")
-async def get_weather(location_id: str):
-    
+# 请求天气数据（城市id或经纬度）
+@weather_api.get("/getWeather/{location}")
+async def get_weather(location: str):
     """
     请求天气数据
 
     向和风天气API发送请求
 
-    :param location_id: 需要查询地区的LocationID
+    :param location: 需要查询地区的LocationID
     :return: 状态码，请求消息，天气信息
     """
 
-    response = requests.get(
+    response_real_time = requests.get(
         "https://devapi.qweather.com/v7/weather/now",
 
         params={
-            "location": location_id,
+            "location": location,
             "lang": "zh",
             "unit": "m"
         },
@@ -69,45 +68,11 @@ async def get_weather(location_id: str):
         headers=header
     )
 
-    result_dict = response.json()
-    status_code = result_dict["code"]
-    if status_code != "200":
-        raise MyCustomException("1", "和风天气API请求出错")
-
-    weather_data = {
-        "time": result_dict["now"]["obsTime"],  # 数据获取时间"2020-06-30T21:40+08:00"
-        "temp": result_dict["now"]["temp"],  # 温度"24"（摄氏度）
-        "feltTemp": result_dict["now"]["feelsLike"],  # 体感温度"26"（摄氏度）
-        "text": result_dict["now"]["text"],  # 天气状况"多云"
-        "windDir": result_dict["now"]["windDir"],  # 风向"东南风"
-        "windScale": result_dict["now"]["windScale"],  # 风力等级"1"
-        "windSpeed": result_dict["now"]["windSpeed"],  # 风速"3"（公里/小时）
-        "humidity": result_dict["now"]["humidity"],  # 相对湿度"72"（%）
-        "precip": result_dict["now"]["precip"],  # 降水量（毫米，过去一个钟）
-        "pressure": result_dict["now"]["pressure"],  # 气压（百帕）
-        "windDir": result_dict["now"]["windDir"],
-        "vis": result_dict["now"]["vis"]  # 气压（百帕）
-    }
-    return ResponseModel(code=0, msg="请求天气数据成功", data=weather_data)
-
-
-# 请求天气数据（经纬度）
-@weather_api.get("/getWeather/byLongitudeLatitude/{longitude_latitude}")
-async def get_weather(longitude_latitude: str):
-    """
-    请求天气数据
-
-    向和风天气API发送请求
-
-    :param longitude_latitude: 需要查询地区的经纬度
-    :return: 状态码，请求消息，天气信息
-    """
-
-    response = requests.get(
-        "https://devapi.qweather.com/v7/weather/now",
+    response_7_days = requests.get(
+        "https://devapi.qweather.com/v7/weather/7d",
 
         params={
-            "location": longitude_latitude,
+            "location": location,
             "lang": "zh",
             "unit": "m"
         },
@@ -115,23 +80,15 @@ async def get_weather(longitude_latitude: str):
         headers=header
     )
 
-    result_dict = response.json()
-    status_code = result_dict["code"]
-    if status_code != "200":
+    result_dict_realTime = response_real_time.json()
+    result_dict_7Days = response_7_days.json()
+
+    status_code_realTime = result_dict_realTime["code"]
+    status_code_10Days = result_dict_7Days["code"]
+
+    if status_code_realTime != "200" or status_code_10Days != "200":
         raise MyCustomException("1", "和风天气API请求出错")
 
-    weather_data = {
-        "time": result_dict["now"]["obsTime"],  # 数据获取时间"2020-06-30T21:40+08:00"
-        "temp": result_dict["now"]["temp"],  # 温度"24"（摄氏度）
-        "feltTemp": result_dict["now"]["feelsLike"],  # 体感温度"26"（摄氏度）
-        "text": result_dict["now"]["text"],  # 天气状况"多云"
-        "windDir": result_dict["now"]["windDir"],  # 风向"东南风"
-        "windScale": result_dict["now"]["windScale"],  # 风力等级"1"
-        "windSpeed": result_dict["now"]["windSpeed"],  # 风速"3"（公里/小时）
-        "humidity": result_dict["now"]["humidity"],  # 相对湿度"72"（%）
-        "precip": result_dict["now"]["precip"],  # 降水量（毫米，过去一个钟）
-        "pressure": result_dict["now"]["pressure"],  # 气压（百帕）
-        "windDir": result_dict["now"]["windDir"],
-        "vis": result_dict["now"]["vis"]
-    }
-    return ResponseModel(code=0, msg="请求天气数据成功", data=weather_data)
+    result_dict = {**result_dict_realTime, **result_dict_7Days}
+
+    return ResponseModel(code=0, msg="请求天气数据成功", data=result_dict)
