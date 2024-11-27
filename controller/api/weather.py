@@ -31,7 +31,7 @@ async def get_city(location: str):
         params={
             "location": location,
             "range": "cn",
-            "lang": "zh"
+            "lang": "en"
         },
 
         headers=header
@@ -61,7 +61,7 @@ async def get_weather(location: str):
 
         params={
             "location": location,
-            "lang": "zh",
+            "lang": "en",
             "unit": "m"
         },
 
@@ -73,7 +73,7 @@ async def get_weather(location: str):
 
         params={
             "location": location,
-            "lang": "zh",
+            "lang": "en",
             "unit": "m"
         },
 

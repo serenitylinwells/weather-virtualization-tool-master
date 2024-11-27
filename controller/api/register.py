@@ -22,24 +22,22 @@ async def register(user: UserDTO):
     :param user: 用户
     :return: 状态码，请求消息，是否注册成功
     """
-    user_json_path = os.path.join('db', 'user.json')
-    users = {}
+    user_json_path = os.path.join('db', 'users.json')
 
-    if os.path.exists(user_json_path):
-        with open(user_json_path, 'r') as f:
-            users = json.load(f)
-            if user.username in users:
-                raise MyCustomException("1", "用户已存在")
+    with open(user_json_path, 'r+') as f:
+        users = json.load(f)
+        if user.username in users:
+            return ResponseModel(code=1, msg="用户已存在", data={})
 
-    users[user.username] = {'username': user.username, 'password': user.password}
-    with open(user_json_path, 'w') as f:
+        users[user.username] = {'username': user.username, 'password': user.detail}
+        f.seek(0)
         json.dump(users, f, indent=4)
-
-    return ResponseModel(code=0, msg="注册成功", data={})
+        f.truncate()
+        return ResponseModel(code=0, msg="注册成功", data={})
 
 
 # 用户登录
-@register_api.post('/login')
+@register_api.get('/login')
 async def login(user: UserDTO):
     """
     用户登录
@@ -49,14 +47,11 @@ async def login(user: UserDTO):
     :param user: 用户
     :return: 状态码，请求消息，是否登录成功
     """
-    user_json_path = os.path.join('db', 'user.json')
+    user_json_path = os.path.join('db', 'users.json')
 
     with open(user_json_path, 'r') as f:
         users = json.load(f)
-        if user.username not in users:
-            raise MyCustomException("1", "用户不存在")
+        if user.username not in users or users[user.username]['password'] != user.detail:
+            return ResponseModel(code=1, msg="用户不存在或密码错误", data={})
 
-        if users[user.username]['password'] != user.password:
-            raise MyCustomException("1", "密码错误")
-
-    return ResponseModel(code=0, msg="登录成功", data={})
+        return ResponseModel(code=0, msg="登录成功", data={})
