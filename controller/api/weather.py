@@ -19,7 +19,7 @@ async def get_city(location: str):
     """
     请求城市信息
 
-    向和风天气API发送请求.
+    向和风天气API发送请求
 
     :param location: 需要查询地区的名称，支持文字、以英文逗号分隔的经度,纬度坐标（十进制，最多支持小数点后两位）
     :return: 状态码，请求消息，城市信息
@@ -27,19 +27,12 @@ async def get_city(location: str):
 
     response = requests.get(
         "https://geoapi.qweather.com/v2/city/lookup",
-
-        params={
-            "location": location,
-            "range": "cn",
-            "lang": "en"
-        },
-
+        params={"location": location, "range": "cn", "lang": "en"},
         headers=header
     )
 
     result_dict = response.json()
-    status_code = result_dict["code"]
-    if status_code != "200":
+    if result_dict["code"] != "200":
         raise MyCustomException("1", "和风天气API请求出错")
     return ResponseModel(code=0, msg="请求城市信息成功", data=result_dict)
 
@@ -58,37 +51,22 @@ async def get_weather(location: str):
 
     response_real_time = requests.get(
         "https://devapi.qweather.com/v7/weather/now",
-
-        params={
-            "location": location,
-            "lang": "en",
-            "unit": "m"
-        },
-
+        params={"location": location, "lang": "en", "unit": "m"},
         headers=header
     )
 
     response_7_days = requests.get(
         "https://devapi.qweather.com/v7/weather/7d",
-
-        params={
-            "location": location,
-            "lang": "en",
-            "unit": "m"
-        },
-
+        params={"location": location, "lang": "en", "unit": "m"},
         headers=header
     )
 
-    result_dict_realTime = response_real_time.json()
-    result_dict_7Days = response_7_days.json()
+    result_dict_real_time = response_real_time.json()
+    result_dict_7_days = response_7_days.json()
 
-    status_code_realTime = result_dict_realTime["code"]
-    status_code_10Days = result_dict_7Days["code"]
-
-    if status_code_realTime != "200" or status_code_10Days != "200":
+    if result_dict_real_time["code"] != "200" or result_dict_7_days["code"] != "200":
         raise MyCustomException("1", "和风天气API请求出错")
 
-    result_dict = {**result_dict_realTime, **result_dict_7Days}
+    result_dict = {**result_dict_real_time, **result_dict_7_days}
 
     return ResponseModel(code=0, msg="请求天气数据成功", data=result_dict)
