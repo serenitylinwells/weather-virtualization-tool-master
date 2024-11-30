@@ -7,7 +7,17 @@
 
 <script>
 export default {
-  props: ["location", "temperature", "weatherText"]
+  props: {
+        location: { 
+            default: '深圳'
+        },
+        temperature: { 
+            default: '22'
+        },
+        weatherText: { 
+            default: '舒适'
+        }
+    },
 };
 </script>
 
@@ -22,8 +32,7 @@ export default {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  aspect-ratio: 3 / 1;
-  /* 更宽比例 */
+  aspect-ratio: 4 / 1;
 }
 
 .location {
