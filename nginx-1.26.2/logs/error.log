@@ -36,6 +36,17 @@
 2024/11/27 14:25:06 [error] 18856#17212: CreateFile() "D:\Work\Web\Software Architecture Project\weather-virtualization-tool\nginx-1.26.2/logs/nginx.pid" failed (2: The system cannot find the file specified)
 2024/11/27 14:25:43 [notice] 1552#27164: signal process started
 2024/11/27 14:25:43 [error] 1552#27164: CreateFile() "D:\Work\Web\Software Architecture Project\weather-virtualization-tool\nginx-1.26.2/logs/nginx.pid" failed (2: The system cannot find the file specified)
-2024/11/28 14:41:45 [error] 23852#30744: *1 CreateFile() "C:\Users\Jason\Desktop\weather-virtualization-tool-master\nginx-1.26.2/html/favicon.ico" failed (2: The system cannot find the file specified), client: 127.0.0.1, server: localhost, request: "GET /favicon.ico HTTP/1.1", host: "localhost", referrer: "http://localhost/"
-2024/11/28 14:42:17 [error] 23852#30744: *4 CreateFile() "C:\Users\Jason\Desktop\weather-virtualization-tool-master\nginx-1.26.2/html/favicon.ico" failed (2: The system cannot find the file specified), client: 127.0.0.1, server: localhost, request: "GET /favicon.ico HTTP/1.1", host: "127.0.0.1", referrer: "http://127.0.0.1/weatherTool/weather-api/getWeather/101280606"
-2024/11/28 15:13:52 [error] 23852#30744: *7 CreateFile() "C:\Users\Jason\Desktop\weather-virtualization-tool-master\nginx-1.26.2/html/favicon.ico" failed (2: The system cannot find the file specified), client: 127.0.0.1, server: localhost, request: "GET /favicon.ico HTTP/1.1", host: "127.0.0.1", referrer: "http://127.0.0.1/weatherTool/weather-api/getWeather/101280606"
+2024/11/27 16:49:24 [notice] 14360#2556: signal process started
+2024/11/27 16:49:24 [error] 14360#2556: CreateFile() "D:\Work\Web\Software Architecture Project\weather-virtualization-tool\nginx-1.26.2/logs/nginx.pid" failed (2: The system cannot find the file specified)
+2024/11/28 17:16:31 [error] 30504#4988: *1 CreateFile() "D:\Work\Web\Software Architecture Project\weather-virtualization-tool\nginx-1.26.2/html/favicon.ico" failed (2: The system cannot find the file specified), client: 127.0.0.1, server: larrysweathertool.com, request: "GET /favicon.ico HTTP/1.1", host: "localhost", referrer: "http://localhost/"
+2024/11/28 17:22:10 [notice] 9352#16420: signal process started
+2024/11/28 17:22:10 [error] 9352#16420: OpenEvent("Global\ngx_stop_5300") failed (5: Access is denied)
+2024/11/28 17:23:32 [notice] 7940#30472: signal process started
+2024/11/28 17:23:46 [notice] 27732#13360: signal process started
+2024/11/28 17:23:46 [error] 27732#13360: CreateFile() "D:\Work\Web\Software Architecture Project\weather-virtualization-tool\nginx-1.26.2/logs/nginx.pid" failed (2: The system cannot find the file specified)
+2024/11/28 17:28:24 [notice] 30300#18256: signal process started
+2024/11/28 17:28:26 [notice] 9656#14808: signal process started
+2024/11/28 17:28:27 [notice] 17152#4144: signal process started
+2024/11/28 17:28:27 [notice] 9840#20788: signal process started
+2024/11/28 17:28:28 [notice] 10348#21536: signal process started
+2024/11/28 17:28:28 [notice] 24336#16684: signal process started
