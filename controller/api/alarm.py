@@ -48,15 +48,19 @@ async def add_alarm(user: UserDTO):
 
     with open(alarm_json_path, 'r') as f:
         alarms = json.load(f)
+
+        # 在预警信息中检查用户制定的预警是否存在
         if user.username in alarms:
             for user_alarm in alarms[user.username]:
                 if user_alarm == user.detail:
                     return ResponseModel(code=1, msg="相关预警已有定义", data={})
+            # 如果预警不存在，则添加到预警信息中
             alarms[user.username].append(user.detail)
         else:
+            # 如果用户不存在，则添加用户和预警到预警信息中
             alarms[user.username] = [[user.detail]]
 
     with open(alarm_json_path, 'w') as f:
         json.dump(alarms, f)
-    return ResponseModel(code=0, msg="添加成功", data={})
 
+    return ResponseModel(code=0, msg="添加成功", data={})

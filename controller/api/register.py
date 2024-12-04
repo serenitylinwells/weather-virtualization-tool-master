@@ -42,16 +42,25 @@ async def login(user: UserDTO):
     """
     用户登录
 
-    检查用户名和密码
+    检查用户名和密码，用户不存在就返回不存在，存在但是预警信息不存在返回空，存在且有预警信息返回预警信息
 
     :param user: 用户
     :return: 状态码，请求消息，是否登录成功
     """
     user_json_path = os.path.join('db', 'users.json')
+    alarm_json_path = os.path.join('db', 'alarms.json')
 
-    with open(user_json_path, 'r') as f:
-        users = json.load(f)
+    with open(user_json_path, 'r') as uf:
+        users = json.load(uf)
+        # 密码错误
         if user.username not in users or users[user.username]['password'] != user.detail:
             return ResponseModel(code=1, msg="用户不存在或密码错误", data={})
+        # 密码正确
+        with open(alarm_json_path, 'r') as af:
+            alarms = json.load(af)
+            # 用户没有制定预警
+            if user.username not in alarms:
+                return ResponseModel(code=2, msg="登录成功", data={})
+            # 用户制定了预警
+            return ResponseModel(code=0, msg="登录成功", data={{"alarms": alarms[user.username]}})
 
-        return ResponseModel(code=0, msg="登录成功", data={})
