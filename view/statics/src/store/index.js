@@ -14,10 +14,10 @@ export default createStore({
     },
   },
   actions: {
-    async fetchWeatherData({ commit }, locationId) {
+    async fetchWeatherData({ commit }, location) {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8081/weatherTool/weather-api/getWeather/${locationId}`
+          `http://127.0.0.1:8081/weatherTool/weather-api/getWeather/${location}`
         );
 
         const data = response.data.data; // 获取后端返回的数据
