@@ -3,10 +3,18 @@
     <header>
       <h2 class="logo">Weather Virtualization Tool</h2>
       <nav class="navigation">
-        <div class="buttons">
+        <!-- 未登录时显示 -->
+        <div class="buttons" v-if="!isLoggedIn">
           <router-link to="/" class="btnWeather">Weather</router-link>
           <router-link to="/setting" class="btnSetting">Setting</router-link>
           <router-link to="/login" class="btnLogin-popup">Login/Register</router-link>
+        </div>
+        <!-- 已登录时显示 -->
+        <div class="user-info" v-else>
+          <router-link to="/" class="btnWeather">Weather</router-link>
+          <router-link to="/setting" class="btnSetting">Setting</router-link>
+          <span class="username">Hello, {{ username }}</span>
+          <button class="btnLogout" @click="handleLogout">Logout</button>
         </div>
       </nav>
     </header>
@@ -16,7 +24,42 @@
 
 <script>
 export default {
-  name: "App"
+  name: "App",
+  data() {
+    return {
+      username: "",
+    };
+  },
+  computed: {
+    isLoggedIn() {
+      return !!localStorage.getItem("token");
+    },
+  },
+  mounted() {
+    this.updateUserState();
+  },
+  methods: {
+    updateUserState() {
+      const token = localStorage.getItem("token");
+      if (token) {
+        try {
+          const payload = JSON.parse(atob(token.split(".")[1]));
+          this.username = payload.username;
+        } catch (error) {
+          console.error("Invalid token:", error);
+          this.username = "";
+        }
+      } else {
+        this.username = "";
+      }
+    },
+    handleLogout() {
+      localStorage.removeItem("token");
+      this.username = "";
+      this.$router.push("/login");
+      setTimeout(() => location.reload(), 100);
+    },
+  },
 };
 </script>
 
@@ -30,7 +73,8 @@ export default {
   align-items: center;
 }
 
-html, body {
+html,
+body {
   overflow: hidden;
 }
 
@@ -83,9 +127,10 @@ header:hover::after {
   font-weight: 500;
   margin-left: 2.5rem;
 }
+
 .navigation .btnWeather,
 .navigation .btnSetting {
-  display: inline-flex; 
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   text-align: center;
@@ -104,9 +149,8 @@ header:hover::after {
   text-decoration: none;
 }
 
-.navigation .btnLogin-popup,
-.navigation .btnRegister-popup {
-  display: inline-flex; 
+.navigation .btnLogin-popup {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   text-align: center;
@@ -126,10 +170,35 @@ header:hover::after {
 }
 
 .navigation .btnLogin-popup:hover,
-.navigation .btnRegister-popup:hover,
 .navigation .btnWeather:hover,
 .navigation .btnSetting:hover {
   background: #fff;
   color: #162938;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+}
+
+.username {
+  margin-right: 1rem;
+  font-weight: bold;
+  color: #fff;
+  margin-left: 20px;
+}
+
+.btnLogout {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 15px;
+  background-color: rgb(255, 77, 77);
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btnLogout:hover {
+  background-color: rgb(241, 98, 98);
 }
 </style>

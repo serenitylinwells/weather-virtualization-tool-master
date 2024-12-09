@@ -12,7 +12,8 @@ const routes = [
   {
     path: "/setting",
     name: "Setting",
-    component: SettingView
+    component: SettingView,
+    meta: { requiresAuth: true }
   },
   {
     path: "/login",
@@ -27,3 +28,12 @@ const router = createRouter({
 });
 
 export default router;
+
+router.beforeEach((to, from, next) => {
+  const isLoggedIn = !!localStorage.getItem("token");
+  if (to.meta.requiresAuth && !isLoggedIn) {
+    next("/login"); // 未登录时跳转到登录页面
+  } else {
+    next(); // 放行
+  }
+});

@@ -2,14 +2,14 @@
     <div class="background"></div>
     <div class="container" ref="container">
         <div class="form-box login" ref="loginBox">
-            <form action="#">
+            <form @submit.prevent="handleLogin">
                 <h1>Login</h1>
                 <div class="input-box">
-                    <input type="text" placeholder="Username" required />
+                    <input v-model="loginForm.username" type="text" placeholder="Phone Number (11 digits)" required />
                     <i class="bx bxs-user"></i>
                 </div>
                 <div class="input-box">
-                    <input type="password" placeholder="Password" required />
+                    <input v-model="loginForm.password" type="password" placeholder="Password" required />
                     <i class="bx bxs-lock-alt"></i>
                 </div>
                 <div class="forgot-link">
@@ -19,14 +19,14 @@
             </form>
         </div>
         <div class="form-box register" ref="registerBox">
-            <form action="#">
+            <form @submit.prevent="handleRegister">
                 <h1>Registration</h1>
                 <div class="input-box">
-                    <input type="text" placeholder="Username" required />
+                    <input v-model="registerForm.username" type="text" placeholder="Phone Number (11 digits)" required />
                     <i class="bx bxs-user"></i>
                 </div>
                 <div class="input-box">
-                    <input type="password" placeholder="Password" required />
+                    <input v-model="registerForm.password" type="password" placeholder="Password" required />
                     <i class="bx bxs-lock-alt"></i>
                 </div>
                 <button type="submit" class="btn">Register</button>
@@ -48,7 +48,21 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
+    data() {
+        return {
+            loginForm: {
+                username: "",
+                password: "",
+            },
+            registerForm: {
+                username: "",
+                password: "",
+            },
+        };
+    },
     methods: {
         switchToRegister() {
             this.$refs.container.classList.add("active");
@@ -64,11 +78,54 @@ export default {
             this.$refs.loginBox.style.visibility = "visible";
             this.$refs.loginBox.style.opacity = "1";
         },
+
+        validatePhoneNumber(phone) {
+            const phoneRegex = /^[0-9]{11}$/; // 匹配 11 位数字
+            return phoneRegex.test(phone);
+        },
+
+        async handleRegister() {
+            try {
+                const response = await axios.post("http://127.0.0.1:8081/weatherTool/register-api/register", {
+                    username: this.registerForm.username,
+                    detail: this.registerForm.password,
+                });
+                if (response.data.code === 0) {
+                    alert("Registration successful! Please login.");
+                    this.switchToLogin();
+                } else {
+                    alert(response.data.msg);
+                }
+            } catch (error) {
+                console.error("Registration failed:", error);
+                alert("Registration failed. Please try again.");
+            }
+        },
+        async handleLogin() {
+            try {
+                const response = await axios.get("http://127.0.0.1:8081/weatherTool/register-api/login", {
+                    params: {
+                        username: this.loginForm.username,
+                        detail: this.loginForm.password,
+                    },
+                });
+                if (response.data.code === 0) {
+                    const token = response.data.data.token;
+                    localStorage.setItem("token", token); // 保存 Token
+                    alert("Login successful!");
+                    this.$router.push("/");
+                    setTimeout(() => location.reload(), 100);
+                } else {
+                    alert(response.data.msg);
+                }
+            } catch (error) {
+                console.error("Login failed:", error);
+                alert("Login failed. Please try again.");
+            }
+        },
     },
 };
 </script>
-
-
 
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap");
