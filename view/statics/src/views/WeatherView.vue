@@ -1,26 +1,26 @@
 <template>
-    <div class="weather-view">
-      <div class="background"></div>
-      <div class="weather-container">
-        <LocationDisplay :location="weatherData.location" :temperature="weatherData.now.temp"
-          :weatherText="weatherData.now.text" />
-        <div>
-          <WeatherCard :dailyForecast="weatherData.dailyForecast" :temperature="weatherData.now.temp" />
-        </div>
-        <div>
-          <WindCard :windScale="weatherData.now.windScale" :windSpeed="weatherData.now.windSpeed"
-            :windDir="weatherData.now.windDir" :wind360="weatherData.now.wind360" class="double-width-card" />
-        </div>
-        <div class="cards">
-          <TemperatureCard :feelsLike="weatherData.now.feelsLike" />
-          <MoonPhaseCard :dailyForecast="weatherData.dailyForecast" />
-          <SunsetCard :sunrise="weatherData.sunrise" :sunset="weatherData.sunset" :obsTime="weatherData.now.obsTime" />
-          <RainfallCard :precip="weatherData.now.precip" />
-          <VisibilityCard :visibility="weatherData.now.visibility" />
-          <PressureCard :pressure="weatherData.now.pressure" />
-        </div>
+  <div class="weather-view">
+    <div class="background"></div>
+    <div class="weather-container">
+      <LocationDisplay :location="weatherData.location" :temperature="weatherData.now.temp"
+        :weatherText="weatherData.now.text" />
+      <div>
+        <WeatherCard :dailyForecast="weatherData.dailyForecast" :temperature="weatherData.now.temp" />
+      </div>
+      <div>
+        <WindCard :windScale="weatherData.now.windScale" :windSpeed="weatherData.now.windSpeed"
+          :windDir="weatherData.now.windDir" :wind360="weatherData.now.wind360" class="double-width-card" />
+      </div>
+      <div class="cards">
+        <TemperatureCard :feelsLike="weatherData.now.feelsLike" />
+        <MoonPhaseCard :dailyForecast="weatherData.dailyForecast" />
+        <SunsetCard :sunrise="weatherData.sunrise" :sunset="weatherData.sunset" :obsTime="weatherData.now.obsTime" />
+        <RainfallCard :precip="weatherData.now.precip" />
+        <VisibilityCard :visibility="weatherData.now.visibility" />
+        <PressureCard :pressure="weatherData.now.pressure" />
       </div>
     </div>
+  </div>
 </template>
 
 <script>
@@ -48,21 +48,28 @@ export default {
     WeatherCard,
     MoonPhaseCard,
   },
-  data() {
-    return {};
-  },
   computed: {
     ...mapGetters(["weatherData"]),
   },
+  beforeRouteEnter(to, from, next) {
+    next((vm) => {
+      // 调用组件实例上的方法
+      vm.getUserLocation();
+    });
+  },
   methods: {
-    // 用浏览器 Geolocation API 获取经纬度
     async getUserLocation() {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           async (position) => {
-            const lat = position.coords.latitude.toFixed(2);
-            const lon = position.coords.longitude.toFixed(2);
-            this.fetchWeatherDataByCoordinates(lat, lon);
+            let lat = position.coords.latitude;
+            let lon = position.coords.longitude;
+
+            lat = lat.toFixed(2);
+            lon = lon.toFixed(2);
+
+            // 使用经纬度查询天气数据
+            await this.fetchWeatherDataByCoordinates(lat, lon);
           },
           (error) => {
             console.error("Geolocation 获取失败: ", error);
@@ -72,13 +79,13 @@ export default {
         console.error("浏览器不支持 Geolocation API");
       }
     },
-    // 获取天气数据
     async fetchWeatherDataByCoordinates(lat, lon) {
       try {
         const response = await axios.get(
           `http://127.0.0.1:8081/weatherTool/weather-api/getWeather/${lon},${lat}`
         );
         const data = response.data.data;
+
         const dailyForecast = data.daily.map((day) => ({
           fxDate: day.fxDate,
           tempMax: day.tempMax,
@@ -92,6 +99,7 @@ export default {
           moonPhase: day.moonPhase,
           moonPhaseIcon: day.moonPhaseIcon,
         }));
+
         const weatherData = {
           now: {
             temp: data.now.temp,
@@ -111,13 +119,15 @@ export default {
           sunset: data.daily[0]?.sunset,
           dailyForecast,
         };
-        this.$store.commit("setWeatherData", weatherData);
+
+        this.$store.commit("setWeatherData", weatherData); // 更新 Vuex 状态
       } catch (error) {
         console.error("获取天气数据失败：", error);
       }
     },
   },
 };
+
 </script>
 
 <style scoped>
