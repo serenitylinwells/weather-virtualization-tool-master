@@ -9,3 +9,5 @@ createApp(App).use(router).use(store).mount('#app');
 axios.defaults.baseURL = "http://127.0.0.1:8081";
 
 import './styles/global.css';
+
+document.title = "Weather Virtualization Tool";
