@@ -1,6 +1,8 @@
 <template>
   <div class="card">
     <h2 class="location">{{ location }}</h2>
+    <p class="adm1">行政区: {{ adm1 }}</p>
+    <p class="rank">评分: {{ rank }}</p>
     <p class="temperature">{{ temperature }}° | {{ weatherText }}</p>
   </div>
 </template>
@@ -8,16 +10,22 @@
 <script>
 export default {
   props: {
-        location: { 
-            default: '深圳'
-        },
-        temperature: { 
-            default: '22'
-        },
-        weatherText: { 
-            default: '舒适'
-        }
+    location: {
+      default: "你的位置",
     },
+    adm1: {
+      default: "未知区域",
+    },
+    rank: {
+      default: "未知",
+    },
+    temperature: {
+      default: "22",
+    },
+    weatherText: {
+      default: "舒适",
+    },
+  },
 };
 </script>
 
@@ -32,7 +40,7 @@ export default {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  aspect-ratio: 4 / 1;
+  aspect-ratio: 2.2 / 1;
 }
 
 .location {
@@ -40,9 +48,14 @@ export default {
   color: white;
 }
 
+.adm1,
+.rank {
+  font-size: 14px;
+  color: #ccc;
+}
+
 .temperature {
   font-size: 14px;
   color: #ccc;
-  margin-top: 10px;
 }
 </style>

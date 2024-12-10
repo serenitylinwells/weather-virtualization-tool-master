@@ -19,32 +19,35 @@
 export default {
     props: {
         dailyForecast: {
+            type: Array, // 指定 prop 类型为数组
+            default: () => [], // 默认值为空数组
         },
     },
     computed: {
+        // 获取当天的每日天气数据
+        currentDayForecast() {
+            return this.dailyForecast[0] || {
+                moonPhase: "未知月相",
+                moonPhaseIcon: "800", // 默认月相图标
+                moonrise: "未知",
+                moonset: "未知",
+            };
+        },
         // 获取当天月相描述
         currentMoonPhase() {
-            return this.dailyForecast.length > 0
-                ? this.dailyForecast[0].moonPhase
-                : "未知月相";
+            return this.currentDayForecast.moonPhase;
         },
         // 获取当天月相图标代码
         currentMoonPhaseIcon() {
-            return this.dailyForecast.length > 0
-                ? this.dailyForecast[0].moonPhaseIcon
-                : "800"; // 默认月相图标
+            return this.currentDayForecast.moonPhaseIcon;
         },
         // 获取当天月出时间
         currentMoonrise() {
-            return this.dailyForecast.length > 0
-                ? this.dailyForecast[0].moonrise
-                : "未知";
+            return this.currentDayForecast.moonrise;
         },
         // 获取当天月落时间
         currentMoonset() {
-            return this.dailyForecast.length > 0
-                ? this.dailyForecast[0].moonset
-                : "未知";
+            return this.currentDayForecast.moonset;
         },
     },
     methods: {

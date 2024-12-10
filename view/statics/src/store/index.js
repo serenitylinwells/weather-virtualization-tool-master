@@ -4,13 +4,43 @@ import { createStore } from "vuex";
 export default createStore({
   state: {
     weatherData: {
-      now: {}, // 初始化当前天气数据为空对象
-      dailyForecast: [], // 初始化 7 天数据为空数组
+      now: {}, // 当前天气数据
+      dailyForecast: [], // 7 天预报数据
     },
+    selectedCity: {
+      name: "",
+      id: "",
+      lat: "",
+      lon: "",
+      adm2: "",
+      adm1: "",
+      country: "",
+      tz: "",
+      utcOffset: "",
+      isDst: "",
+      type: "",
+      rank: "",
+    }, // 存放选中城市的详细信息
   },
   mutations: {
     setWeatherData(state, weatherData) {
       state.weatherData = weatherData; // 更新天气数据
+    },
+    setSelectedCity(state, city) {
+      state.selectedCity = {
+        name: city.name || "",
+        id: city.id || "",
+        lat: city.lat || "",
+        lon: city.lon || "",
+        adm2: city.adm2 || "",
+        adm1: city.adm1 || "",
+        country: city.country || "",
+        tz: city.tz || "",
+        utcOffset: city.utcOffset || "",
+        isDst: city.isDst || "0",
+        type: city.type || "",
+        rank: city.rank || "",
+      }; // 提取并存储城市详细信息
     },
   },
   actions: {
@@ -22,7 +52,6 @@ export default createStore({
 
         const data = response.data.data; // 获取后端返回的数据
 
-        // 提取每日数据
         const dailyForecast = data.daily.map((day) => ({
           fxDate: day.fxDate, // 日期
           tempMax: day.tempMax, // 最高温
@@ -37,7 +66,6 @@ export default createStore({
           moonPhaseIcon: day.moonPhaseIcon,
         }));
 
-        // 构造完整的 weatherData 数据结构
         const weatherData = {
           now: {
             temp: data.now.temp,
@@ -58,13 +86,27 @@ export default createStore({
           dailyForecast, // 7 天预报
         };
 
-        commit("setWeatherData", weatherData); // 更新 Vuex 状态
+        commit("setWeatherData", weatherData); // 更新天气数据
       } catch (error) {
         console.error("获取天气数据失败：", error);
+      }
+    },
+    async fetchCityData({ commit }, location) {
+      try {
+        const response = await axios.get(
+          `http://127.0.0.1:8081/weatherTool/weather-api/getCity/${location}`
+        );
+        if (response.data.code === 0) {
+          const city = response.data.data.location[0]; // 假设选取第一个匹配的城市
+          commit("setSelectedCity", city); // 更新选中的城市数据
+        }
+      } catch (error) {
+        console.error("获取城市数据失败：", error);
       }
     },
   },
   getters: {
     weatherData: (state) => state.weatherData, // 返回天气数据
+    selectedCity: (state) => state.selectedCity, // 返回选中的城市详细信息
   },
 });
