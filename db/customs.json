@@ -1,0 +1,13 @@
+{
+  "John":
+    {
+      "alerts": false,
+      "moon": false,
+      "pressure": false,
+      "rainfall": false,
+      "sunset": false,
+      "temperature": false,
+      "visibility": false,
+      "wind": false
+    }
+}
