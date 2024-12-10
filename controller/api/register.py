@@ -1,27 +1,19 @@
 import os
 import json
 import jwt
+
 from datetime import datetime, timedelta
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
-from dotenv import load_dotenv
 
+from model import ResponseModel
+from model.user import UserDTO
+from config import settings
 
-# 加载 .env 文件中的环境变量
-load_dotenv()
-
-# 从环境变量中获取密钥
-SECRET_KEY = os.getenv("SECRET_KEY", "fallback-secret-key")  
+SECRET_KEY = settings.token_key
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 600
 # 创建注册路由器实例
 register_api = APIRouter()
-
-
-# 定义用户数据模型
-class UserDTO(BaseModel):
-    username: str
-    detail: str
 
 
 # 用户注册接口
@@ -51,7 +43,7 @@ async def register(user: UserDTO):
 
         # 检查用户名是否已存在
         if user.username in users:
-            return {"code": 1, "msg": "用户已存在", "data": {}}
+            return ResponseModel(code=1, msg="用户已存在", data={})
 
         # 添加用户
         users[user.username] = {"username": user.username, "password": user.detail}
@@ -59,7 +51,7 @@ async def register(user: UserDTO):
         json.dump(users, f, indent=4)
         f.truncate()
 
-    return {"code": 0, "msg": "注册成功", "data": {}}
+    return ResponseModel(code=0, msg="注册成功", data={})
 
 
 # 用户登录接口
@@ -73,18 +65,20 @@ async def login(username: str, detail: str):
 
     # 检查用户文件是否存在
     if not os.path.exists(user_json_path):
-        return {"code": 1, "msg": "用户不存在或密码错误", "data": {}}
+        with open(user_json_path, "w") as f:
+            json.dump({}, f)
+        return ResponseModel(code=1, msg="用户文件不存在", data={})
 
     with open(user_json_path, "r") as uf:
         users = json.load(uf)
 
         # 验证用户名和密码
         if username not in users or users[username]["password"] != detail:
-            return {"code": 1, "msg": "用户不存在或密码错误", "data": {}}
+            return ResponseModel(code=1, msg="用户名或密码错误", data={})
 
         # 用户验证成功，生成 JWT Token
         token = create_access_token(data={"username": username})
-        return {"code": 0, "msg": "登录成功", "data": {"token": token}}
+        return ResponseModel(code=0, msg="登录成功", data={"token": token})
 
 
 # 生成 JWT Token

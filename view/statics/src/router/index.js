@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import WeatherView from "../views/WeatherView.vue"; // 天气主页面
 import SettingView from "../views/SettingView.vue"; // 设置页面
 import LoginView from "../views/LoginView.vue"; // 登录页面
+import SearchWeatherView from "../views/SearchWeatherView.vue";
 
 const routes = [
   {
@@ -19,7 +20,12 @@ const routes = [
     path: "/login",
     name: "Login",
     component: LoginView
-  }
+  },
+  {
+    path: "/search-weather",
+    name: "SearchWeather",
+    component: SearchWeatherView
+  },
 ];
 
 const router = createRouter({

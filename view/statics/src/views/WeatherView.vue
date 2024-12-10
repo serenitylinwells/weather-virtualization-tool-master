@@ -2,8 +2,8 @@
   <div class="weather-view">
     <div class="background"></div>
     <div class="weather-container">
-      <LocationDisplay :location="weatherData.location" :temperature="weatherData.now.temp"
-        :weatherText="weatherData.now.text" />
+      <LocationDisplay :location="cityDetails.name" :adm1="cityDetails.adm1" :rank="cityDetails.rank"
+        :temperature="weatherData.now.temp" :weatherText="weatherData.now.text" />
       <div>
         <WeatherCard :dailyForecast="weatherData.dailyForecast" :temperature="weatherData.now.temp" />
       </div>
@@ -51,24 +51,27 @@ export default {
   computed: {
     ...mapGetters(["weatherData"]),
   },
-  beforeRouteEnter(to, from, next) {
-    next((vm) => {
-      // 调用组件实例上的方法
-      vm.getUserLocation();
-    });
+  data() {
+    return {
+      cityDetails: {
+        name: "你的位置",
+        adm1: "未知区域",
+        rank: "未知",
+      },
+    };
   },
   methods: {
     async getUserLocation() {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           async (position) => {
-            let lat = position.coords.latitude;
-            let lon = position.coords.longitude;
+            const lat = position.coords.latitude.toFixed(2);
+            const lon = position.coords.longitude.toFixed(2);
 
-            lat = lat.toFixed(2);
-            lon = lon.toFixed(2);
+            // Query city details
+            await this.fetchCityByCoordinates(lat, lon);
 
-            // 使用经纬度查询天气数据
+            // Query weather data
             await this.fetchWeatherDataByCoordinates(lat, lon);
           },
           (error) => {
@@ -77,6 +80,27 @@ export default {
         );
       } else {
         console.error("浏览器不支持 Geolocation API");
+      }
+    },
+    async fetchCityByCoordinates(lat, lon) {
+      try {
+        const response = await axios.get(
+          `http://127.0.0.1:8081/weatherTool/weather-api/getCity/${lon},${lat}`
+        );
+
+        const cityData = response.data.data.location[0];
+        this.cityDetails = {
+          name: cityData.name || "未知地点",
+          adm1: cityData.adm1 || "未知区域",
+          rank: cityData.rank || "未知",
+        };
+      } catch (error) {
+        console.error("获取城市信息失败：", error);
+        this.cityDetails = {
+          name: "未知地点",
+          adm1: "未知区域",
+          rank: "未知",
+        };
       }
     },
     async fetchWeatherDataByCoordinates(lat, lon) {
@@ -120,15 +144,20 @@ export default {
           dailyForecast,
         };
 
-        this.$store.commit("setWeatherData", weatherData); // 更新 Vuex 状态
+        this.$store.commit("setWeatherData", weatherData);
       } catch (error) {
         console.error("获取天气数据失败：", error);
       }
     },
   },
+  beforeRouteEnter(to, from, next) {
+    next((vm) => {
+      vm.getUserLocation();
+    });
+  },
 };
-
 </script>
+
 
 <style scoped>
 .weather-view {

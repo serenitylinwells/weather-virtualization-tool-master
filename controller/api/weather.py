@@ -1,14 +1,13 @@
 import requests
 import json
 import os
-from dotenv import load_dotenv
 from fastapi import APIRouter
 
 from model import ResponseModel
 from model.exception import MyCustomException
+from config import settings
 
-load_dotenv()
-API_KEY = os.getenv("API_KEY")
+API_KEY = settings.api_key
 # 创建天气路由器实例
 weather_api = APIRouter()
 
