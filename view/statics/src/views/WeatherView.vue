@@ -46,16 +46,18 @@ export default {
     PressureCard,
     WindCard,
     WeatherCard,
-    MoonPhaseCard
+    MoonPhaseCard,
   },
   computed: {
     ...mapGetters(["weatherData"]),
   },
-  mounted() {
-    this.getUserLocation();  // 用浏览器 Geolocation API 获取位置
+  beforeRouteEnter(to, from, next) {
+    next((vm) => {
+      // 调用组件实例上的方法
+      vm.getUserLocation();
+    });
   },
   methods: {
-    // 用浏览器 Geolocation API 获取经纬度
     async getUserLocation() {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
@@ -67,7 +69,7 @@ export default {
             lon = lon.toFixed(2);
 
             // 使用经纬度查询天气数据
-            this.fetchWeatherDataByCoordinates(lat, lon);
+            await this.fetchWeatherDataByCoordinates(lat, lon);
           },
           (error) => {
             console.error("Geolocation 获取失败: ", error);
@@ -77,16 +79,13 @@ export default {
         console.error("浏览器不支持 Geolocation API");
       }
     },
-
     async fetchWeatherDataByCoordinates(lat, lon) {
       try {
-        // 通过经纬度获取天气数据
         const response = await axios.get(
           `http://127.0.0.1:8081/weatherTool/weather-api/getWeather/${lon},${lat}`
         );
-        const data = response.data.data; // 获取后端返回的数据
+        const data = response.data.data;
 
-        // 提取每日数据
         const dailyForecast = data.daily.map((day) => ({
           fxDate: day.fxDate,
           tempMax: day.tempMax,
@@ -128,6 +127,7 @@ export default {
     },
   },
 };
+
 </script>
 
 <style scoped>
@@ -144,7 +144,7 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgb(52, 66, 66);
+  background: url(../assets/cloudy.jpg) no-repeat;
   background-size: cover;
   z-index: -1;
 }
@@ -154,8 +154,9 @@ export default {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
+  margin-top: 200px;
   padding: 20px;
-  height: 100vh;
+  height: 75vh;
   overflow-y: scroll;
   display: flex;
   flex-direction: column;
