@@ -9,5 +9,5 @@ __pycache__/
 *.log
 
 db/alarms.json
-db/cunstoms.json
+db/customs.json
 db/users.json
