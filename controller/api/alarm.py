@@ -12,7 +12,7 @@ alarm_api = APIRouter()
 
 
 # 请求用户预警制定记录
-@alarm_api.get('/checkAlarm/{username}')
+@alarm_api.get('/getAlarm/{username}')
 async def alarm(username: str):
     """
     请求用户预警制定记录
