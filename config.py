@@ -12,6 +12,7 @@ class Settings(BaseSettings):
         env_file (str): 环境变量文件路径，默认为 `.env`。
     """
     api_key: str  # API接口密钥配置项
+    token_key: str  # token验证密钥
 
     class Config:
         env_file = ".env"  # 指定环境变量文件

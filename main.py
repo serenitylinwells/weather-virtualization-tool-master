@@ -13,7 +13,7 @@ app.include_router(weather_api, prefix="/weatherTool/weather-api", tags=["天气
 app.include_router(alarm_api, prefix="/weatherTool/alarm-api", tags=["预警接口"])
 
 if __name__ == '__main__':
-    uvicorn.run('main:app', port=8081, reload=True)
+    uvicorn.run(app, port=8081, reload=True)
 
 # 配置 CORS 中间件
 app.add_middleware(

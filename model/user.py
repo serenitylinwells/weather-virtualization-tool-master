@@ -8,7 +8,7 @@ class UserDTO(BaseModel):
 
     Attributes:
     - username (str): 用户名
-    - detail (str): 密码
+    - detail (str): 密码或预警信息
     """
 
     username: str
